@@ -5,9 +5,8 @@ import java.awt.Image;
 @Entity
 @ToString
 @EqualsAndHashCode
-@Getter
-@Setter
 @NoArgsConstructor
+@Data
 public class Product {
     private long id;
     private String name;

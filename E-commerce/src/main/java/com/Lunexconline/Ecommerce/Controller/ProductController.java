@@ -7,14 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProductController {
+
     private ProductService productService;
     public ProductController(ProductService productService) {
         super();
         this.productService = productService;
     }
-    @GetMapping("/Product")
+    @GetMapping("/")
     public String listProducts (Model model){
         model.addAttribute("product" , productService.getAllProduct());
-        return "home";
+        return "";
     }
 }

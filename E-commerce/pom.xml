@@ -74,6 +74,7 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<jvmArguments>--add-opens java.desktop/java.awt=ALL-UNNAMED</jvmArguments>
 				</configuration>
 			</plugin>
 		</plugins>

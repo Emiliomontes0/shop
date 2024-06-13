@@ -8,4 +8,5 @@ public interface ProductService {
     List<Product> getAllProducts();
     Product saveProduct(Product product);
     Product saveProductWithImages(Product product, List<MultipartFile> images) throws IOException;
+    void deleteProductById(String id);
 }

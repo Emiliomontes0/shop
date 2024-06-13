@@ -1,6 +1,8 @@
 package com.Lunexconline.Ecommerce.Entity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
@@ -9,9 +11,11 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Data
+@Document(collection = "products")
 public class Product {
+
     @Id
-    private long id;
+    private String id;
 
     private String name;
 

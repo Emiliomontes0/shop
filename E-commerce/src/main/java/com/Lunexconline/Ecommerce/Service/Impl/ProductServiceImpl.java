@@ -31,6 +31,11 @@ public class ProductServiceImpl implements ProductService {
     public Product saveProduct(Product product) {
         return productRepository.save(product);
     }
+    @Override
+    public void deleteProductById(String id) {
+        productRepository.deleteById(id);
+    }
+
 
     @Override
     public Product saveProductWithImages(Product product, List<MultipartFile> images) throws IOException {

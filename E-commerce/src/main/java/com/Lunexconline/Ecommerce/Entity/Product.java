@@ -7,25 +7,42 @@ import java.util.List;
 @Entity
 @ToString
 @EqualsAndHashCode
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Data
 public class Product {
     @Id
     private long id;
+
     private String name;
-    private int cost;
+
+    private double price;
+
     private int count;
+
     @ElementCollection
     private List<String> imagePaths;
-    Product(String name, int cost, int count){
+
+    public Product(String name, double price, int count){
         this.name = name;
-        this.cost = cost;
+        this.price = price;
         this.count = count;
     }
     public List<String> getImagePaths(){
         return imagePaths;
     }
+
     public void setImagePaths(List<String> imagePaths){
         this.imagePaths=imagePaths;
     }
+
+    public String setName (String name){
+        return this.name = name;
+    }
+
+    public String getName(){return name;}
+
+    public double getPrice(){return price;}
+
+    public double setPrice(double price){return this.price = price;}
+
 }

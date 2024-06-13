@@ -5,8 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
-    List<Product> getAllProduct();
+    List<Product> getAllProducts();
     Product saveProduct(Product product);
-    Product updateProduct (Product product);
-    void saveProductImages(Long productId, List<MultipartFile> files) throws IOException;
+    Product saveProductWithImages(Product product, List<MultipartFile> images) throws IOException;
 }

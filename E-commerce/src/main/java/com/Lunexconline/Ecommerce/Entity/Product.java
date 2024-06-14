@@ -23,6 +23,9 @@ public class Product {
 
     private int count;
 
+    private String description;
+    //add Review , date, likes, etc
+
     @ElementCollection
     private List<String> imagePaths;
 

@@ -6,6 +6,7 @@ import Home from './components/Home';  // Assuming you have a Home component
 import Shop from './components/Shop';
 import ProductForm from './components/ProductForm';
 import ShoppingCart from './components/ShoppingCart';
+import Login from './components/Login';
 const AppContainer = styled.div`
   // your app container styles
 `;
@@ -20,6 +21,7 @@ function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/create-product" element={<ProductForm />} />
           <Route path="/Cart" element = {<ShoppingCart />} />
+          <Route path="/login" element = {<Login />} />
           {/* Add more routes as necessary */}
         </Routes>
       </AppContainer>

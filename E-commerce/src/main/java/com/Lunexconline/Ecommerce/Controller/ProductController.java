@@ -22,12 +22,13 @@ public class ProductController {
     public List<Product> listProducts() {
         return productService.getAllProducts();
     }
+
     @DeleteMapping("/product/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         productService.deleteProductById(id);
         return ResponseEntity.noContent().build();
     }
-    @PostMapping("/product")
+    @PostMapping("/createProduct")
     public ResponseEntity<Product> createProduct(
             @RequestParam("name") String name,
             @RequestParam("price") double price,

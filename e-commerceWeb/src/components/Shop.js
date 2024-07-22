@@ -10,14 +10,14 @@ const ProductsContainer = styled.div`
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
-  margin-top: 20px;  // Adjust top margin if necessary
+  margin-top: 20px;
 `;
 
 const HeadersContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center; 
+  align-items: center;
 `;
 
 const StyledButton = styled.button`
@@ -47,7 +47,6 @@ const StyledButton = styled.button`
   }
 `;
 
-
 const Shop = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -57,13 +56,13 @@ const Shop = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/products'); // Adjust the URL as needed
+        const response = await axios.get('/shop'); // Adjust the URL as needed
         setProducts(response.data);
-        setIsLoading(false);
       } catch (err) {
         setError('Failed to fetch products');
-        setIsLoading(false);
         console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -74,20 +73,25 @@ const Shop = () => {
     navigate('/create-product');
   };
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
     <Layout>
       <HeadersContainer>
         <h1>Shop</h1>
         <StyledButton onClick={handleCreateProductClick} style={{ marginTop: '20px' }}>Create New Product</StyledButton>
       </HeadersContainer>
-      <ProductsContainer>
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </ProductsContainer>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : products.length === 0 ? (
+        <p>No products available</p>
+      ) : (
+        <ProductsContainer>
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </ProductsContainer>
+      )}
     </Layout>
   );
 };

@@ -25,6 +25,8 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
+    private static final String HARDCODED_EMAIL = "example@example.com";
+    private static final String HARDCODED_PASSWORD = "password";
 
     @Autowired
     public UserController(UserService userService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
@@ -42,28 +44,32 @@ public class UserController {
         return ResponseEntity.ok(savedUser);
     }
 
+
+
+
+
+
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
-            );
-        } catch (AuthenticationException e) {
-            throw new Exception("Incorrect email or password", e);
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) {
+        User user = userService.findByEmail(authenticationRequest.getEmail());
+        if (user != null && passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+            final String jwt = jwtUtil.generateToken(userDetails);
+            return ResponseEntity.ok("Login successful: " + new AuthenticationResponse(jwt));
+        } else {
+            return ResponseEntity.status(401).body("Incorrect email or password");
         }
-
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
-
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<User> getUserProfile(Authentication authentication) {
-        User user = userService.findByEmail(authentication.getName());
-        if (user == null) {
-            return ResponseEntity.notFound().build();
+    /*@PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) {
+        User user = userService.findByEmail(authenticationRequest.getEmail());
+        if (user != null && passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity.ok("Login successful");
+        } else {
+            return ResponseEntity.status(401).body("Incorrect email or password");
         }
-        return ResponseEntity.ok(user);
-    }
+    }*/
+
 }
+

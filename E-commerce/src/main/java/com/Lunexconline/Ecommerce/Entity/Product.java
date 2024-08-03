@@ -23,11 +23,11 @@ public class Product {
 
     private int count;
 
-    private String description;
+    /*private String description;
     private String series;
     private String character;
     private String material;
-    //add Review , date, likes, etc
+    //add Review , date, likes, etc*/
 
     @ElementCollection
     private List<String> imagePaths;

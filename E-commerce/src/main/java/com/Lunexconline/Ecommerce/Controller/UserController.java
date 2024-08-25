@@ -15,6 +15,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,8 +29,6 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
-    private static final String HARDCODED_EMAIL = "example@example.com";
-    private static final String HARDCODED_PASSWORD = "password";
 
     @Autowired
     public UserController(UserService userService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
@@ -46,30 +48,31 @@ public class UserController {
 
 
 
+    @PostMapping("/test-response")
+    public ResponseEntity<?> testResponse(HttpServletResponse response) {
+        return ResponseEntity.ok("Response works");
+    }
 
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) {
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) {
         User user = userService.findByEmail(authenticationRequest.getEmail());
         if (user != null && passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
             final String jwt = jwtUtil.generateToken(userDetails);
-            return ResponseEntity.ok("Login successful: " + new AuthenticationResponse(jwt));
+
+            Cookie cookie = new Cookie("token", jwt);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true); // Use true if your app uses HTTPS
+            cookie.setPath("/");
+            cookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+            response.addCookie(cookie);
+
+            return ResponseEntity.ok(new AuthenticationResponse(jwt));
         } else {
             return ResponseEntity.status(401).body("Incorrect email or password");
         }
     }
-
-    /*@PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) {
-        User user = userService.findByEmail(authenticationRequest.getEmail());
-        if (user != null && passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.ok("Login successful");
-        } else {
-            return ResponseEntity.status(401).body("Incorrect email or password");
-        }
-    }*/
-
 }
 

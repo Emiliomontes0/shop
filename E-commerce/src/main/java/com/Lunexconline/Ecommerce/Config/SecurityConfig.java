@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -31,15 +32,16 @@ public class SecurityConfig {
         this.jwtUtil = jwtUtil;
     }
 
-    //403 issue here try making have a role
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // CSRF token stored in a cookie
+                    .ignoringRequestMatchers("/api/users/register", "/api/users/login")
+        )
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/users/login", "POST")).permitAll()//fixed login issue now apply security
-                        .requestMatchers("/api/shop/**").permitAll()
+                        .requestMatchers("/api/users/register", "/api/users/login").permitAll()
                         .anyRequest().authenticated()
 
                 )
@@ -47,7 +49,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
-        //http.addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

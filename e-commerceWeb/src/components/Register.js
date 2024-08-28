@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-// Adding a full-page background
 const PageContainer = styled.div`
-  background-color: #f0f2f5; /* Light gray background */
+  background-color: #f0f2f5;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -14,10 +13,10 @@ const PageContainer = styled.div`
 `;
 
 const Container = styled.div`
-  max-width: 400px; /* Increased max-width */
+  max-width: 500px;
   width: 100%;
   margin: 20px;
-  padding: 30px; /* Increased padding for more space inside */
+  padding: 30px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -26,7 +25,7 @@ const Container = styled.div`
 const Title = styled.h2`
   text-align: center;
   margin-bottom: 30px;
-  font-size: 28px; /* Slightly increased font size */
+  font-size: 28px;
   color: #333;
 `;
 
@@ -47,7 +46,7 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
-  width: 95%;
+  width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -97,31 +96,51 @@ const RegisterLink = styled.p`
   }
 `;
 
-const Login = ({ onLogin }) => {
+const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     try {
-      const response = await axios.post('http://localhost:8080/api/users/login', { email, password });
-      console.log(response.data);
-      navigate('/');  // Redirect to home page after login
+      const response = await axios.post('http://localhost:8080/api/users/register', {
+        email,
+        password,
+      });
+      console.log('Response:', response);
+
+      if (response.status === 201) {
+        navigate('/login');
+      } else {
+        setError('Registration failed. Please try again.');
+      }
     } catch (err) {
-      setError('Invalid email or password');
+      if (err.response && err.response.status === 409) {
+        setError('Account already exists with this email.');
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+      console.error('Error:', err.response || err.message);
     }
   };
 
   return (
     <PageContainer>
       <Container>
-        <Title>Login</Title>
+        <Title>Create Account</Title>
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Form onSubmit={handleSubmit}>
           <FormGroup>
-            <Label htmlFor="email">Email:</Label>
+            <Label htmlFor="email">Email Address:</Label>
             <Input
               type="email"
               id="email"
@@ -140,14 +159,24 @@ const Login = ({ onLogin }) => {
               required
             />
           </FormGroup>
-          <Button type="submit">Login</Button>
+          <FormGroup>
+            <Label htmlFor="confirmPassword">Confirm Password:</Label>
+            <Input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </FormGroup>
+          <Button type="submit">Register</Button>
         </Form>
         <RegisterLink>
-          Don't have an account? <Link to="/register">Register here</Link>
+          Already have an account? <a href="/login">Login here</a>
         </RegisterLink>
       </Container>
     </PageContainer>
   );
 };
 
-export default Login;
+export default Register;

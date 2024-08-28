@@ -7,6 +7,7 @@ import Shop from './components/Shop';
 import ProductForm from './components/ProductForm';
 import ShoppingCart from './components/ShoppingCart';
 import Login from './components/Login';
+import Register from './components/Register';
 const AppContainer = styled.div`
   // your app container styles
 `;
@@ -22,6 +23,7 @@ function App() {
           <Route path="/create-product" element={<ProductForm />} />
           <Route path="/Cart" element = {<ShoppingCart />} />
           <Route path="/login" element = {<Login />} />
+          <Route path="/register" element = {<Register/>}/>
           {/* Add more routes as necessary */}
         </Routes>
       </AppContainer>

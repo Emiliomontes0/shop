@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+
+
 
 
 
@@ -40,19 +43,16 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        if (userService.findByEmail(user.getEmail()) != null) {
+            // Return 409 Conflict if the user already exists
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this email already exists");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Encode password before saving
         User savedUser = userService.saveUser(user);
-        return ResponseEntity.ok(savedUser);
+        System.out.println("Returning HTTP status: " + HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
-
-
-
-    @PostMapping("/test-response")
-    public ResponseEntity<?> testResponse(HttpServletResponse response) {
-        return ResponseEntity.ok("Response works");
-    }
-
 
 
     @PostMapping("/login")
